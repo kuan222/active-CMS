@@ -1,3 +1,7 @@
+RUN apk add --no-cache python3 make g++ 
+
+
+
 # Add build dependencies for node-gyp
 RUN apk add --no-cache python3 make g++ 
 
