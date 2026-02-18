@@ -1,23 +1,22 @@
-# 1. Start the first stage and NAME IT 'builder'
-FROM node:18-alpine AS builder
+# Use an older Node version compatible with Laravel Mix 2.0
+FROM node:10-alpine AS builder
 
-# 2. Install the build tools we discussed earlier
-RUN apk add --no-cache python3 make g++
+# Install build tools required for node-gyp
+RUN apk add --no-cache python2 make g++ gcc
 
 WORKDIR /app
 COPY package*.json ./
+
+# Force install if you hit dependency resolution issues
 RUN npm install
+
 COPY . .
-# If you have a build step (like npm run prod for Laravel Mix), add it here:
-# RUN npm run prod
+# Run your build step (Laravel Mix 2.0 uses 'dev' or 'production' usually)
+RUN npm run dev
 
-# 3. Start the second (final) stage
-FROM node:20-slim
+# Final Stage
+FROM node:10-alpine
 WORKDIR /app
-
-# 4. Now this 'from=builder' will work correctly!
 COPY --from=builder /app .
-
 EXPOSE 3000
 CMD ["npm", "start"]
-
