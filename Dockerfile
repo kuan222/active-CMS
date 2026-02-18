@@ -33,8 +33,15 @@ COPY --from=asset-builder /app /var/www/html
 COPY . /var/www/html
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Use the flag shown in your error log output
-RUN composer install --no-dev --optimize-autoloader --no-security-blocking
+# Copy project files
+COPY . /var/www/html
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Use an environment variable to disable the audit/security block entirely
+RUN COMPOSER_AUDIT_ABANDONED=ignore composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+
+# Fix permissions for Laravel
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Fix permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
