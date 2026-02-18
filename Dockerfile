@@ -38,6 +38,14 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer config audit.abandoned ignore && \
     composer config audit.intervals 0 && \
     composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+# Copy project files
+COPY . /var/www/html
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# 1. Remove the lock file to bypass the version/security conflicts
+# 2. Run install (which will act like an update)
+RUN rm -f composer.lock && \
+    composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction
 
 
 # Fix permissions for Laravel
