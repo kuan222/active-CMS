@@ -1,12 +1,15 @@
-# Add build dependencies for node-gyp
-RUN apk add --no-cache python3 make g++ 
+# 1. First, define the base image (crucial!)
+FROM node:18-alpine
 
+# 2. Then, add the build dependencies
+RUN apk add --no-cache python3 make g++
+
+# 3. Rest of your build steps
+WORKDIR /app
 COPY package*.json ./
 RUN npm install
+COPY . .
 
-# Use a Node version that matches your project
-FROM node:20-slim AS builder
-WORKDIR /app
 
 # REQUIRED: Install tools to fix the "gyp Build failed" error
 RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
