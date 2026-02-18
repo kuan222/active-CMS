@@ -33,8 +33,8 @@ COPY --from=asset-builder /app /var/www/html
 COPY . /var/www/html
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Added --no-audit to bypass the security block
-RUN composer install --no-dev --optimize-autoloader --no-audit
+# Use the flag shown in your error log output
+RUN composer install --no-dev --optimize-autoloader --no-security-blocking
 
 # Fix permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
