@@ -29,16 +29,16 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 # Copy assets from Stage 1
 COPY --from=asset-builder /app /var/www/html
 
-# Copy project files and install Composer dependencies
-COPY . /var/www/html
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
 # Copy project files
 COPY . /var/www/html
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Use an environment variable to disable the audit/security block entirely
-RUN COMPOSER_AUDIT_ABANDONED=ignore composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+# 1. Disable the audit feature globally for this build
+# 2. Run the install with platform requirements ignored
+RUN composer config audit.abandoned ignore && \
+    composer config audit.intervals 0 && \
+    composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+
 
 # Fix permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
