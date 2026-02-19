@@ -26,7 +26,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 COPY . /var/www/html
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 4. RUN composer config audit.abandoned ignore && \
+RUN composer config audit.abandoned ignore && \
     composer config audit.intervals 0 && \
     rm -f composer.lock && \
     composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction
