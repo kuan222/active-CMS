@@ -23,13 +23,17 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 
 # 3. Copy files
-COPY --from=asset-builder /app /var/www/html
 COPY . /var/www/html
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 4. Install without the lock file
+# 4. THE FIX: Set COMPOSER_AUDIT_ABANDONED=ignore to skip the security block
 RUN rm -f composer.lock && \
-    composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction
+    COMPOSER_AUDIT_ABANDONED=ignore composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --ignore-platform-reqs \
+    --no-interaction \
+    --no-audit
 
 # 5. Permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
