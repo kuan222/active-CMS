@@ -9,7 +9,7 @@ COPY . .
 RUN npm run prod
 
 # --- STAGE 2: Run the Laravel App ---
-FROM php:8.2-apache
+FROM php:8.3-apache
 WORKDIR /var/www/html
 
 # 1. Install EVERY extension Laravel 10 might ask for
